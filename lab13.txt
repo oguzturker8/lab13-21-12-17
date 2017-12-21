@@ -1,0 +1,221 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package bigicrava;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Collections;
+import java.util.Random;
+import java.util.Scanner;
+import java.util.Vector;
+
+/**
+ *
+ * @author alev
+ */
+public class BigIcrava{
+
+    /**
+     * @param args the command line arguments
+     */
+    
+    public static int sayiUret(){
+        int sayi = 0;
+        int t;
+        int i = 3;
+        int[] a = {1,2,3,4,5,6,7,8,9};
+        
+        Random r = new Random();
+        
+        while(i >= 0){
+            t = r.nextInt(9);
+            if (a[t] != -1){
+                sayi += a[t] * Math.pow(10, i);
+                i--;
+                a[t] = -1;
+            }
+        }
+        return sayi;
+    }
+    
+    public static Tahmin karsilastir(int a, int b){
+        Tahmin t = new Tahmin();
+        
+        String A = Integer.toString(a);
+        String B = Integer.toString(b);
+        
+        for(int i = 0; i <4; i++)
+            for(int j = 0; j <4; j++)
+                if(A.charAt(i) == B.charAt(j))
+                    if(i == j)
+                        t.arti++;
+                     else
+                        t.eksi++;
+        
+        
+        return t;
+    }
+    
+    
+    public static void dosyaGuncelle(oyuncu o1) throws FileNotFoundException {
+        
+        Vector<oyuncu> O = new Vector<oyuncu>();
+        oyuncu o;
+        //oyuncu[] o = new oyuncu[5];
+        int i = 0;
+        try {
+            File file = new File("sonuc.txt");
+            FileReader fileReader = new FileReader(file);
+            BufferedReader bufferedReader = new BufferedReader(fileReader);
+            StringBuffer stringBuffer = new StringBuffer();
+            String line;
+            while ((line = bufferedReader.readLine()) != null) {
+                int p = line.indexOf(" ");
+                o = new oyuncu(line.substring(0, p), Integer.valueOf(line.substring(p+1)));
+                O.add(o);
+                
+            }
+            fileReader.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        
+        
+        O.add(o1);
+        for(int j=0; j < O.size(); j++){
+            for(int jj=0; jj < O.size(); jj++){
+               if(O.elementAt(j).getPuan() < O.elementAt(jj).getPuan()){
+                Collections.swap(O, j, jj);
+                    
+                }
+            }
+        }
+        
+        PrintWriter writer = new PrintWriter("sonuc.txt");
+        writer.print("");
+        
+        
+        String s;
+        
+        for(int j = 0; j < O.size() && j < 5; j++){
+            s = O.elementAt(j).getIsim() + " " + O.elementAt(j).getPuan();
+            writer.println(s);
+        }
+        
+        writer.close();
+    }
+    
+    
+    
+    public static void main(String[] args) throws FileNotFoundException {
+        // TODO code application logic here
+        
+        Scanner sc = new Scanner(System.in);
+        
+        
+        
+        System.out.print("Isim giriniz:");
+        String isim = sc.nextLine();
+        
+        oyuncu o = new oyuncu(isim);
+        
+        
+        int tahmin, tahminS = 0;
+        int sayi = sayiUret();
+        System.out.println("sayi: " + sayi);
+        
+        do{
+            System.out.println("Sayi giriniz");
+            tahmin = sc.nextInt();
+            Tahmin k = karsilastir(tahmin, sayi);
+            
+            tahminS++;
+            
+            if(k.arti == 4){System.out.println("Tebrikler! " + o.getIsim() + " Tahmin sayisi: " + tahminS ); o.setPuan(tahminS); break; }
+            
+            System.out.println("Arti sayisi: " + k.arti);
+            System.out.println("Eksi sayisi: " + k.eksi);
+            
+        }while(true);
+        
+        
+        dosyaGuncelle(o);
+    }
+    
+}
+
+
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package bigicrava;
+
+/**
+ *
+ * @author alev
+ */
+public class Tahmin {
+    int arti = 0;
+    int eksi = 0;
+    
+    
+    
+}
+
+
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package bigicrava;
+
+/**
+ *
+ * @author alev
+ */
+public class oyuncu {
+    private String isim;
+    private int puan;
+    
+    
+    oyuncu(oyuncu l){
+        this.isim = l.isim;
+        this.puan = l.puan;
+    }
+    
+    oyuncu(String i){
+        this.isim = i;
+        puan = -1;
+    }
+    
+    
+    oyuncu(String i, int p){
+        this.isim = i;
+        this.puan = p;
+    }
+    
+    public String getIsim(){
+        return this.isim;
+    }
+    
+    public int getPuan(){
+        return this.puan;
+    }
+    
+    public void setPuan(int p){
+        this.puan = p;
+    }
+    
+    
+    
+}
